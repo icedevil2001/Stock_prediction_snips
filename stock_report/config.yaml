@@ -1,0 +1,30 @@
+email_address:
+    - priyesh1983@gmail.com
+subject: "Daily stock report"
+message: "Daily stock report. Best Pri"
+stock_list: 
+  - LON:BARC
+  - LON:VOD
+  - FSLY
+  - TTD
+  - LON:EZJ
+  - DIS
+  - LON:AFC
+  - LON:IGE
+  - LON:IGP
+  - LON:IPO
+  - LON:IQE
+  - LON:KOD
+  - LON:MRO
+  - LON:RDSB
+  - LON:RMG
+  - LON:LLOY
+  - LON:GDR
+  - LON:JD
+  - LON:EZJ
+  - LON:IAG
+  - JNJ
+  - ASML
+  - BYND
+  - BABA
+  - NEM
