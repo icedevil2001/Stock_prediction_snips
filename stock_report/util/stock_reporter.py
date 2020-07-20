@@ -7,14 +7,10 @@ import yfinance as yf
 import datetime
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
+from util.Config import Config, Signal
 
 # matplotlib.use('agg')
 sns.set_style('whitegrid')
-
-# tm  = datetime.datetime.now()
-# dir(tm)
-# st = tm - datetime.timedelta(days=365)
-# STARTDATE = st.strftime('%Y-%m-%d')
 
 
 def get_stock(ticker):
@@ -87,21 +83,15 @@ def MACD_plot(df, tinker):
     ax[0].scatter(df.index, df.Sell+df.close, c='r', marker="v" ,label='Sell')
     companyname = company_name(tinker)
     ax[0].set_title(f'Stock: {companyname} Ticker:{tinker}')
+    
+    # ax[0].set_xlim(left=Config.datelimit(90))
+    # ax[1].set_xlim(left=Config.datelimit(90))
+
     ax[0].legend()
     ax[1].legend()
+
     return fig, ax 
 
-class config:
-    def MACD_long():
-#         return dict( [("short",12), ("long",26),("macd_length",9)] )
-        return ( 12,26,9 )
-    def MACD_short():
-#         return dict( [("short",5), ("long",35),("macd_length",5)] )
-        return (5,35,5)
-    def MACD_setting( short, long,macd_length ):
-#         return dict( [("short",short), ("long", long),("macd_length",macd_length)] )
-        return (short, long,macd_length )
-# config.MACD_setting(1,2,3)
 
 def convert_tinker(x):
     if x.startswith("LON"):
@@ -110,6 +100,35 @@ def convert_tinker(x):
     else:
         return x
 
+def create_report(tinker_list, email):
+    plots = []
+    skipped = []
+    outfile = Config.report_dir() / '{}.stock_daily_report.pdf'.format(email)
+    with PdfPages(outfile) as pdf:
+        for tinker in tinker_list:
+            # print(tinker)
+            stock = (convert_tinker(tinker))
+            # print(stock)
+            try:
+                df = process_df(stock, Config.startdate(), Signal.MACD_long() )
+                # print(df)
+                plots.append(MACD_plot(df, stock))
+                pdf.savefig()  # saves the current figure into a pdf page
+                plt.close()
+            except Exception as e:
+                # print(e)
+                print('skipped:', email, tinker)
+                skipped.append(tinker)
+            
+        print(f'Plots: {len(plots)}, skipped: {len(skipped)}')
+        d = pdf.infodict()
+        d['Title'] = 'Stock report'
+        d['Author'] = 'Pri '
+        # d['Subject'] = 'How to create a multipage pdf file and set its metadata'
+        # d['Keywords'] = 'PdfPages multipage keywords author title subject'
+        d['CreationDate'] = datetime.datetime.today()
+        d['ModDate'] = datetime.datetime.today()
+    return outfile
 
 # df = process_df("BAR.L", STARTDATE, config.MACD_long())
 # MACD_plot(df, "BAR.L")
