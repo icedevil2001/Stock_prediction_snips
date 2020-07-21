@@ -71,7 +71,7 @@ def create_message_with_attachment(sender, to, subject, message_text, file):
     message.attach(msg)
 
     content_type, encoding = mimetypes.guess_type(file)
-    print(content_type, encoding)
+    # print(content_type, encoding)
     if content_type is None or encoding is not None:
         content_type = 'application/octet-stream'
         print("*****")
@@ -80,7 +80,7 @@ def create_message_with_attachment(sender, to, subject, message_text, file):
         main_type, sub_type = content_type.split('/', 1)
         print(main_type, sub_type)
     if main_type in ['text', 'application/pdf','pdf']:
-        print("HERE")
+  
         fp = open(file, 'rb')
         msg = MIMEText(fp.read(), _subtype=sub_type)
         fp.close()
@@ -94,19 +94,20 @@ def create_message_with_attachment(sender, to, subject, message_text, file):
         fp.close()
     else:
         fp = open(file, 'rb')
-        print('**',main_type, sub_type)
+        
         msg = MIMEBase(main_type, sub_type)
         # msg.add_header("Content-Disposition", filename=file)
         msg.set_payload(fp.read())
-        fp.close()
         encoders.encode_base64(msg)
-
+        fp.close()
+      
 
     filename = os.path.basename(file)
     msg.add_header('Content-Disposition', 'attachment', filename=filename)
+    # print(msg)
     message.attach(msg)
-    # print(message)
-    text = message.as_string()
+    text = message.as_string() #.encode('UTF-8').decode('ascii')
+    ## .encode('UTF-8')).decode('ascii')
     # message.attach(MIMEText(open(file, 'rb').read()), _subtype='pdf')
     return {"raw":base64.urlsafe_b64encode(text.encode('UTF-8')).decode('ascii')} #{'raw': base64.urlsafe_b64encode(message.as_string())}
 

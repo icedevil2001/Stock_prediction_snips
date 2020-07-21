@@ -9,9 +9,14 @@ from google.auth.transport.requests import Request
 
 class Config:
     
-    default_time = datetime.datetime.strptime('6:00', '%H:%M').time()
-    wkd = Path(__file__).parents[1]
     
+    wkd = Path(__file__).parents[1]
+    current_date =  datetime.datetime.now()
+
+    report_time = '01:00'
+    read_inbox_hr = 1
+    default_time = datetime.datetime.strptime('6:00', '%H:%M').time()
+    send_email_at = "06:00" 
 
     data_path  = wkd / 'data' / 'data.plk'
 
