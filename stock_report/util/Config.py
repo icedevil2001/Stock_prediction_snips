@@ -13,10 +13,10 @@ class Config:
     wkd = Path(__file__).parents[1]
     current_date =  datetime.datetime.now()
 
-    report_time = '01:00'
+    report_time = '17:29'
     read_inbox_hr = 1
-    default_time = datetime.datetime.strptime('6:00', '%H:%M').time()
-    send_email_at = "06:00" 
+    default_time = datetime.datetime.strptime('17:30', '%H:%M').time()
+    send_email_at = "17:30"
 
     data_path  = wkd / 'data' / 'data.plk'
 

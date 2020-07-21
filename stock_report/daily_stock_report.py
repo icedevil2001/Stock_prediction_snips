@@ -21,7 +21,7 @@ def create_report():
 
 def get_report(email_add):
     outdir = Config.report_dir()
-    return outdir / '{}.stock_daily_report.pdf'.format(email_add)
+    return str(outdir / '{}.stock_daily_report.pdf'.format(email_add))
 
 def send_report():
     print('Send report')
@@ -49,9 +49,9 @@ print('-'*50)
 schedule.every(Config.read_inbox_hr).hours.do(GetInbox).tag('read_email')
 
 schedule.every().day.at(Config.report_time).do(create_report).tag('create_daily_report')
-
+#schedule.every(30).seconds.do(create_report).tag('create_daily_report')
 schedule.every().day.at(str(Config.default_time)).do(send_report).tag('send_report')
-
+#schedule.every(44).seconds.do(send_report)
 try:
     while True:
         schedule.run_pending() 
