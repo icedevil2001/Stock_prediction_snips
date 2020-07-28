@@ -69,7 +69,7 @@ def create_message_with_attachment(sender, to, subject, message_text, file):
 
     msg = MIMEText(message_text)
     message.attach(msg)
-
+    print(file)
     content_type, encoding = mimetypes.guess_type(file)
     # print(content_type, encoding)
     if content_type is None or encoding is not None:
@@ -94,9 +94,8 @@ def create_message_with_attachment(sender, to, subject, message_text, file):
         fp.close()
     else:
         fp = open(file, 'rb')
-        
         msg = MIMEBase(main_type, sub_type)
-        # msg.add_header("Content-Disposition", filename=file)
+        #msg.add_header("Content-Disposition", filename=file)
         msg.set_payload(fp.read())
         encoders.encode_base64(msg)
         fp.close()
