@@ -1,5 +1,6 @@
 token.pickle
 credentials.json
+twilio.env
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
