@@ -10,7 +10,7 @@ from util import Mail, stock_reporter
 import schedule
 from get_emails  import GetInbox
 import time
-
+from stock_news import stock_news 
 
 def create_report():
     data = Config.load_data()
@@ -32,8 +32,11 @@ def send_report():
             msg  = Mail.create_message_with_attachment(
                             Config.sender_id(),
                             email_add, Config.subject(),
-                            Config.body(),
-                            get_report(email_add))
+                            # Config.body(),
+                            stock_news(data[email_add]['watch']),
+                            get_report(email_add),
+                            body_type='html'
+                            )
 
             Mail.send_message(Config.Service(), Config.sender_id(), msg)
             # schedule.every(44).seconds.do(send_report).tag('send_report')
@@ -46,16 +49,21 @@ print(f'Create report daily at: {Config.report_time}')
 print(f'Send email at: {Config.default_time}')
 print('-'*50)
 
-schedule.every(Config.read_inbox_hr).hours.do(GetInbox).tag('read_email')
 
+
+# schedule.every(10).seconds.do(GetInbox)#.tag('read_email')
+
+# schedule.every(12).seconds.do(create_report)#.tag('create_daily_report')
+# schedule.every(15).seconds.do(send_report)#.tag('send_report')
+
+schedule.every(Config.read_inbox_hr).hours.do(GetInbox).tag('read_email')
 schedule.every().day.at(Config.report_time).do(create_report).tag('create_daily_report')
-#schedule.every(30).seconds.do(create_report).tag('create_daily_report')
 schedule.every().day.at(str(Config.default_time)).do(send_report).tag('send_report')
-#schedule.every(44).seconds.do(send_report)
 try:
     while True:
         schedule.run_pending() 
         time.sleep(3) 
+        # schedule.clear()
 except KeyboardInterrupt:
     print() 
     print('Interrupt')

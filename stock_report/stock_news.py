@@ -4,7 +4,9 @@ from datetime import datetime
 from pprint import pprint
 from dateutil.parser import parse
 from datetime import datetime
+from time import sleep
 import jmespath
+
 
 from jinja2 import Environment, FileSystemLoader
 from email.mime.text import MIMEText
@@ -25,7 +27,8 @@ class Info:
         if response.status_code == 200:
             return response.json()
         else:
-            print('ERROR',response.status_code)
+            print('ERROR',self.symbol,response.status_code)
+            return None 
             
     def get_news(self) :
         return jmespath.search('news[0].summary', self.data)#.encode('utf-8')#.decode("utf-8", "replace")
@@ -53,7 +56,12 @@ class Info:
 #         close = jmespath.search('quote.clsoe', self.data)
         d = []
         for key in ['close','change', 'high', 'low', 'avgTotalVolume']:
-            d.append( "{}: {}".format(key, self.data['quote'][key]) )
+            data = self.data.get('quote',False)
+
+            if data:
+                d.append( "{}: {}".format(key, self.data['quote'].get(key, 'N/A') ) )
+            else:
+                d.append( "{}: {}".format(key, 'N/A') )
         return ' '.join(map(str,d))
                                
 class Builder:
@@ -71,31 +79,37 @@ class Builder:
             ## Build Jinja2 template
             output = template.render(symbols=symbol, companyNames=companyNames,  news=news,prices=prices)
 #             print(output)
-            # body = MIMEText(output, "html")
-            return output
+            body = MIMEText(output, "html")
+            return output #body 
         except Exception as e:
-            print('ERROR', e)
+            print('ERROR - builder', e)
             print()
 
 
+def stock_news(STOCKS):
+    # STOCKS = ['AAPL','FSLY', 'MSFT']
+    companyNames = []
+    news = []
+    prices = []
 
-STOCKS = ['AAPL','FSLY', 'MSFT']
-companyNames = []
-news = []
-prices = []
+    for stock in STOCKS:
+        stock_data = Info(stock)
+        if not stock_data.get_data():
+            print('News- skipped',stock)
+            continue 
+        print(stock)
+        companyNames.append(stock_data.companyName())
+        news.append(stock_data.get_news())
+        prices.append(stock_data.price())
+        sleep(.25)
 
-for stock in STOCKS:
-    stock_data = Info(stock)
-    companyNames.append(stock_data.companyName())
-    news.append(stock_data.get_news())
-    prices.append(stock_data.price())
 
 
+    builder = Builder()
+    report = builder.build_template(STOCKS, companyNames, news, prices)
+    return report 
+    # print(report)
 
-builder = Builder()
-report = builder.build_template(STOCKS, companyNames, news, prices)
-# print(report)
-
-# print(report)
-with open('stock_report.html', 'w') as fileout:
-    fileout.write(report)
+    # # print(report)
+    # with open('stock_report.html', 'w') as fileout:
+    #     fileout.write(report)
