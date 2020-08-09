@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Daily Stock Instights</title>
+        <style>
+            h1{
+                color: #22CBCF;
+                text-align: center;
+            }
+            h2{
+                text-align: center;
+            }
+            span.small{
+                color: #22CBCF;
+                font-size: smaller;
+                text-align: center;
+            }
+            p{
+                text-align: center;
+            }
+
+            div{
+                #background: #ccc;
+                padding: 40px 10px 40px 10px;}
+        </style>
+    </head>
+    <body>
+        <div>
+        <h1>Articles mentioning your tracked stocks</h1><br/>
+        {% set count = namespace(i=0) %}
+        {% for symbol in symbols %}
+        <h2>{{symbol}} - {{companyNames[count.i]}}</h2>
+        <p><small>{{ prices[count.i] }}</small></p>
+        <p>
+            {{news[count.i]}}<br/><br/>
+        </p>
+            {% set count.i = count.i + 1 %}
+        {% endfor %}
+        </div>
+    </body>
+
+</html>
